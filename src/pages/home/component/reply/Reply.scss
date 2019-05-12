@@ -1,0 +1,19 @@
+.reply-item-select {
+  margin-top: 5px;
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(221, 221, 221, 0.81);
+  &:hover {
+    background: #e7ecef;
+  }
+}
+
+.reply-item {
+  margin-top: 5px;
+  padding: 10px;
+  border-radius: 10px;
+  background: white;
+  &:hover {
+    background: rgba(221, 221, 221, 0.81);
+  }
+}
