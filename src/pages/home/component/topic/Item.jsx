@@ -37,18 +37,19 @@ export default class Item extends Component {
     }
 
     renderContent(txt) {
+        //删除转发原文
         if (this.props.item.repost_status && txt.length > this.props.item.repost_status.txt.length + 1) {
             const repost = this.props.item.repost_status.txt;
             repost.unshift({text: '@' + this.props.item.repost_status.user.name});
             const difference = txt.length - repost.length;
             for (let i = repost.length - 1; i >= 0; i--) {
                 if (txt[difference + i].text.trim() === repost[i].text.trim()) {
-                    console.log(repost[i].text);
                     txt.pop();
                     console.log(txt);
                 }
             }
         }
+
         const content = [];
         txt.forEach((item) => {
             if (item.type === "text") {
@@ -61,7 +62,15 @@ export default class Item extends Component {
                         }
                     })
                 } else {
-                    content.push(item.text)
+                    // content.push(<span style={{
+                    //     wordBreak: 'pre-line',
+                    //     textOverflow: 'ellipsis',
+                    //     wordWrap: 'break-word',
+                    //     overflow: 'hidden',
+                    //     margin: 0,
+                    //     padding: 0
+                    // }}>{item.text}</span>)
+                    content.push(<Text>{item.text}</Text>)
                 }
             } else if (item.type === "at") {
                 content.push(<Popup trigger={<a onClick={e => this.handleOpenUser(e, item.id)}>{item.text}</a>}
@@ -111,7 +120,14 @@ export default class Item extends Component {
         }
         if (item.photo) {
             media = (
-                <img style={{width: '100%', height: '300px', objectFit: 'cover', border: '1px', marginTop: '10px',borderRadius:'10px'}}
+                <img style={{
+                    width: '100%',
+                    height: '300px',
+                    objectFit: 'cover',
+                    border: '1px',
+                    marginTop: '10px',
+                    borderRadius: '10px'
+                }}
                      src={item.photo.originurl}
                      onClick={(e) => {
                          e.stopPropagation();
@@ -183,9 +199,10 @@ export default class Item extends Component {
     };
 
     handleOpenUser = (e, user) => {
+        console.log(user);
         e.stopPropagation();
         e.nativeEvent.stopImmediatePropagation();
-        const url = '/user/' + (user.id === null ? user : user.id);
+        const url = '/user/' + (user.id ? user.id : user);
         history.push(url);
     };
 
@@ -256,7 +273,7 @@ export default class Item extends Component {
                             </Box>
 
                         </Box>
-                        <div style={{whiteSpace: 'normal', wordBreak: 'break-all', wordWrap: 'break-word'}}>
+                        <div style={{background:'#ff0'}}>
                             {this.renderContent.bind(this)(item.txt)}
                         </div>
                         {this.renderChild.bind(this)(item)}
@@ -335,7 +352,6 @@ export default class Item extends Component {
                         onCloseRequest={() => this.setState({openLight: false})}
                         animationDisabled={true}
                         imageCaption={item.plain_text}
-                        toolbarButtons={[<Button type="dashed" ghost>查看原文</Button>]}
                     />
                 )}
                 <Modal

@@ -2,11 +2,12 @@ import React, {Component} from 'react';
 import Masonry from 'react-masonry-component';
 import DocumentTitle from 'react-document-title';
 import {Spinner} from 'gestalt';
-import {message, Button} from 'antd';
+import {message, Button, Modal} from 'antd';
 import Lightbox from 'react-image-lightbox';
 import {getPhotos, getUserInfo} from "../../../../utils/fanfou";
 import moment from "moment/moment";
 import PropTypes from 'prop-types';
+import Reply from "../reply/Reply";
 
 export default class Photo extends Component {
     static contextTypes = {
@@ -24,7 +25,8 @@ export default class Photo extends Component {
             codeType: true,
             hasMore: true,
             page: 0,
-            loading: false
+            loading: false,
+            openReply: false
         }
     }
 
@@ -106,7 +108,7 @@ export default class Photo extends Component {
     };
 
     render() {
-        const {data, loading, openLight, item} = this.state;
+        const {data, loading, openLight, item, openReply} = this.state;
         return (
             <div style={{margin: '0px 12px', width: '600px', height: '100%'}}>
                 <Masonry
@@ -144,9 +146,29 @@ export default class Photo extends Component {
                         onCloseRequest={() => this.setState({openLight: false})}
                         animationDisabled={true}
                         imageCaption={item.plain_text}
-                        toolbarButtons={[<Button type="dashed" ghost>查看原文</Button>]}
+                        toolbarButtons={[<Button type="dashed" ghost onClick={() => {
+                            this.setState({
+                                openReply:true,
+                                openLight:false
+                            })
+                        }}>查看原文</Button>]}
                     />
                 )}
+                <Modal
+                    visible={openReply}
+                    footer={null}
+                    centered={true}
+                    maskClosable={true}
+                    destroyOnClose={true}
+                    onCancel={()=>{
+                        this.setState({
+                            openReply: false
+                        })
+                    }}>
+                    <Reply item={item} type={0} onSend={() => {
+                        this.setState({openReply: false})
+                    }}/>
+                </Modal>
                 <DocumentTitle title={"相册"} key="title"/>
             </div>
         );

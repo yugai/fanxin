@@ -142,7 +142,7 @@ export default class Topic extends Component {
     };
 
     renderItem = (item, i) => {
-        return <Item item={item} key={i} onDel={() => {
+        return <Item item={item} key={item.id} onDel={() => {
             this.state.data.splice(i, 1);
             this.setState({
                 data: this.state.data

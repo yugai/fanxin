@@ -19,13 +19,15 @@ export default class Item extends Component {
 
     render() {
         const {item, type} = this.props;
-        const {following} = this.state;
+        let following = false;
         let button = '';
         switch (type) {
             case 0:
+                following = this.state.following;
                 button = '取消关注';
                 break;
             case 1:
+                following = this.state.following;
                 button = following ? '取消关注' : '关注';
                 break;
             case 2:
@@ -60,12 +62,15 @@ export default class Item extends Component {
 
                 <div style={{
                     display: 'flex',
+                    flexDirection: 'column',
                     flexGrow: 1,
                     alignItems: 'flex-end',
                     justifyContent: 'flex-end'
                 }}>
-                    {type === 1 && (<Button type={following ? 'danger' : 'default'}
-                                            shape='round'>{button}</Button>)}
+                    {type === 3 && (<div style={{flexGrow: 1}}>
+                        <Button type={following ? 'danger' : 'default'}
+                                shape='round'>拒绝</Button>
+                    </div>)}
                     <Button type={following ? 'danger' : 'default'}
                             shape='round'>{button}</Button>
 

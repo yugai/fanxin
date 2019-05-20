@@ -150,7 +150,7 @@ export default class Chat extends Component {
                         name={message.sender.name}
                     />
                     <div>
-                        <Popover placement='top' content={<a style={{color: 'red'}} onClick={() => {
+                        <Popover placement='top' trigger="click" content={<a style={{color: 'red'}} onClick={() => {
                             this.del(message.id)
                         }}>删除消息</a>}>
                             <div className={`bubble ${bubbleClass}`}>
