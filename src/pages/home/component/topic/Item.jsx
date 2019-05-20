@@ -62,15 +62,14 @@ export default class Item extends Component {
                         }
                     })
                 } else {
-                    // content.push(<span style={{
-                    //     wordBreak: 'pre-line',
-                    //     textOverflow: 'ellipsis',
-                    //     wordWrap: 'break-word',
-                    //     overflow: 'hidden',
-                    //     margin: 0,
-                    //     padding: 0
-                    // }}>{item.text}</span>)
-                    content.push(<Text>{item.text}</Text>)
+                    content.push(<span style={{
+                        wordBreak: 'pre-line',
+                        textOverflow: 'ellipsis',
+                        wordWrap: 'break-word',
+                        overflow: 'hidden',
+                        margin: 0,
+                        padding: 0
+                    }}>{item.text}</span>)
                 }
             } else if (item.type === "at") {
                 content.push(<Popup trigger={<a onClick={e => this.handleOpenUser(e, item.id)}>{item.text}</a>}
@@ -273,7 +272,7 @@ export default class Item extends Component {
                             </Box>
 
                         </Box>
-                        <div style={{background:'#ff0'}}>
+                        <div style={{width: '530px'}}>
                             {this.renderContent.bind(this)(item.txt)}
                         </div>
                         {this.renderChild.bind(this)(item)}
