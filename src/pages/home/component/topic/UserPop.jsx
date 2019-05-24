@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
 import {Avatar, Spinner, Text, Link} from 'gestalt';
-import {Button} from 'antd'
-import {getUserInfo} from '../../../../utils/fanfou';
+import {Button, message} from 'antd'
+import {getUserInfo, postAddFriend, postDelFriend} from '../../../../utils/fanfou';
 import {MyIcon} from "../../../../layouts/MyIcon";
 import {history} from "../../../../history";
 
@@ -29,7 +29,6 @@ export default class UserPop extends Component {
         const that = this;
         if (this.props.id) {
             getUserInfo({"id": this.props.id}).then((data) => {
-                console.log(data);
                 that.setState({
                     user: data,
                     isLoading: false
@@ -58,7 +57,35 @@ export default class UserPop extends Component {
     }
 
     handleFollow = () => {
-
+        if (this.state.user.following) {
+            postDelFriend({id: this.props.id}).then((data) => {
+                if (data.error) {
+                    message.error("取消关注失败")
+                } else {
+                    const user = this.state.user;
+                    user.following = !user.following;
+                    this.setState({
+                        user: user
+                    })
+                }
+            }).catch(() => {
+                message.error("取消关注失败")
+            })
+        } else {
+            postAddFriend({id: this.props.id}).then((data) => {
+                if (data.error) {
+                    message.error("关注失败")
+                } else {
+                    const user = this.state.user;
+                    user.following = !user.following;
+                    this.setState({
+                        user: user
+                    })
+                }
+            }).catch(() => {
+                message.error("关注失败")
+            })
+        }
     };
 
     render() {
@@ -89,7 +116,7 @@ export default class UserPop extends Component {
                                     {this.renderUserGender()}
                                 </div>
                             </div>
-                            <span style={{whiteSpace: 'pre-wrap'}}>{user.description}</span>
+                            <span style={styles.describe}>{user.description}</span>
                         </div>
 
                         <div style={{padding: '10px'}}>
@@ -117,7 +144,6 @@ const styles = {
     },
     info: {
         marginTop: '-46px',
-        padding: '10px'
     },
     user: {
         display: 'flex',
@@ -125,6 +151,14 @@ const styles = {
         alignItems: 'center',
         marginBottom: '5px',
 
+    },
+    describe: {
+        width: '250px',
+        whiteSpace:'pre-wrap',
+        textAlign: 'center',
+        overflow: 'hidden',
+        display:'-webkit-box',
+        webkitBoxOrient:'vertical'
     }
 
 };

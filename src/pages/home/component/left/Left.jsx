@@ -66,10 +66,7 @@ export default class Left extends Component {
                         <div className="padding"/>
                         <Text bold>{user.screen_name}</Text>
                         <div className="padding"/>
-                        <Text overflow="normal" leading="tall">
-                            {user.description}
-                        </Text>
-                        <div className="padding"/>
+                        <span className="describe">{user.description}</span>
                         <Text inline size="xs">
                             今日是{pronoun}在饭否的第 {day} 个日子
                         </Text>

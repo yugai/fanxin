@@ -68,26 +68,29 @@ export default class Reply extends Component {
     }
 
     loadChildStatus = () => {
+        let id = this.props.item.id;
         if (this.props.item.type === 'reply') {
-            getContextStatuses({id: this.props.item.in_reply_to_status_id}).then((data) => {
-                if (data.error) {
-                    console.log(data.error);
-                } else {
-                    let selectItem;
-                    data.map((item, i) => {
-                        if (item.id === this.props.item.id) {
-                            selectItem = item;
-                        }
-                    });
-                    this.setState({items: data, item: data[0], selectItem: selectItem});
-                }
-
-            }).finally(() => {
-                this.setState({loading: false})
-            })
-        } else {
-            this.setState({loading: false})
+            id = this.props.item.in_reply_to_status_id;
         }
+        getContextStatuses({id: id}).then((data) => {
+            console.log(data);
+            if (data.error) {
+                console.log(data.error);
+            } else {
+                let selectItem;
+                data.map((item, i) => {
+                    if (item.id === this.props.item.id) {
+                        selectItem = item;
+                    }
+                });
+                this.setState({items: data, item: data[0], selectItem: selectItem});
+            }
+
+        }).finally(() => {
+            this.setState({loading: false})
+        })
+
+
     };
 
 
@@ -273,7 +276,6 @@ export default class Reply extends Component {
 
 
     renderChild() {
-        console.log('1111');
         let media;
         if (false) {
             media = (<Player/>);

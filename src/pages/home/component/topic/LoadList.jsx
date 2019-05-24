@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
+import React, {PureComponent} from 'react';
 import PropTypes from 'prop-types'
 
-export default class LoadList extends Component {
+export default class LoadList extends PureComponent {
     static propTypes = {
         loadMore: PropTypes.func,
         num: PropTypes.number,
