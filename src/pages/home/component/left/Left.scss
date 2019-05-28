@@ -1,8 +1,10 @@
 .sidebar {
   width: 300px;
+
   .user {
     background: #fff;
     border-radius: 5px;
+
     .background {
       border-top-left-radius: 5px;
       border-top-right-radius: 5px;
@@ -11,6 +13,7 @@
       height: 150px;
       object-fit: cover;
     }
+
     .info {
       margin-top: -80px;
       display: flex;
@@ -19,14 +22,24 @@
       padding: 30px;
       align-items: center;
     }
+
     .describe {
       width: 300px;
       padding: 20px;
       white-space: pre-wrap;
       text-align: center;
-      margin-bottom: 10px;
-      overflow:hidden;
+      overflow: hidden;
     }
+
+    .icon {
+      margin: 10px;
+    }
+  }
+  
+  .operation{
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
   }
 
   .menu {
@@ -35,23 +48,28 @@
     border-radius: 5px;
     padding-top: 10px;
     padding-bottom: 10px;
+
     .item {
       display: flex;
       padding: 10px;
+
       &:hover {
         background: rgba(71, 160, 235, 0.81);
         color: white;
       }
+
       .right {
         flex-grow: 1;
         text-align: right;
       }
     }
-    .item-select{
+
+    .item-select {
       display: flex;
       padding: 10px;
       background: rgba(71, 160, 235, 0.81);
       color: white;
+
       .right {
         flex-grow: 1;
         text-align: right;

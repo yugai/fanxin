@@ -115,7 +115,12 @@ export default class Follower extends Component {
     };
 
     renderItem = (item, i) => {
-        return <Item item={item} type={this.state.itemIndex} key={i}/>
+        return <Item item={item} type={this.state.itemIndex} key={item.id} onDel={()=>{
+            this.state.data.splice(i, 1);
+            this.setState({
+                data: this.state.data
+            })
+        }}/>
     };
 
     render() {

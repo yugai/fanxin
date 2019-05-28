@@ -206,5 +206,9 @@ export const postAcceptFriend = opt => {
     return ff.post('/friendships/accept', {...opt})
 };
 
+export const postDenyBlocks = opt => {
+    const ff = initFanfou();
+    return ff.post('/blocks/destroy', {...opt})
+};
 
 

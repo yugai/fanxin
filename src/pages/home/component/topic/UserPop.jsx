@@ -58,7 +58,7 @@ export default class UserPop extends Component {
 
     handleFollow = () => {
         if (this.state.user.following) {
-            postDelFriend({id: this.props.id}).then((data) => {
+            postDelFriend({id: this.state.user.id}).then((data) => {
                 if (data.error) {
                     message.error("取消关注失败")
                 } else {
@@ -68,11 +68,12 @@ export default class UserPop extends Component {
                         user: user
                     })
                 }
-            }).catch(() => {
+            }).catch((e) => {
+                console.log(e);
                 message.error("取消关注失败")
             })
         } else {
-            postAddFriend({id: this.props.id}).then((data) => {
+            postAddFriend({id: this.state.user.id}).then((data) => {
                 if (data.error) {
                     message.error("关注失败")
                 } else {
@@ -82,7 +83,8 @@ export default class UserPop extends Component {
                         user: user
                     })
                 }
-            }).catch(() => {
+            }).catch((e) => {
+                console.log(e);
                 message.error("关注失败")
             })
         }
