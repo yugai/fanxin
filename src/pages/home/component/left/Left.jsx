@@ -5,22 +5,43 @@ import PropTypes from 'prop-types'
 import './Left.scss'
 import Menu from "./Menu";
 import {MyIcon} from "../../../../layouts/MyIcon";
-import {Button, Tooltip} from "antd";
+import {Button, Tooltip, message} from "antd";
+import Chat from "../message/Chat";
+import {postAddBlocks, postAddFriend, postDelFriend} from "../../../../utils/fanfou";
+
+const ButtonGroup = Button.Group;
 
 export default class Left extends Component {
     static contextTypes = {
         user: PropTypes.object,
-        loginUser: PropTypes.object
+        loginUser: PropTypes.object,
+        onChangeUser: PropTypes.func
     };
 
     constructor(props) {
         super(props);
+        this.state = {
+            openChat: false,
+            userName: ''
+        };
     }
+
+    onRef = (ref) => {
+        this.child = ref
+    };
+
+    handleItemClose = () => {
+        this.setState({
+            openChat: false
+        })
+    };
 
 
     render() {
         const {user} = this.context;
+        const {openChat, userName} = this.state;
         console.log(user);
+        console.log(this.context.loginUser);
         let pronoun;
         if (user.id === this.context.loginUser.id) {
             pronoun = '我';
@@ -55,6 +76,19 @@ export default class Left extends Component {
                 break
         }
 
+        let followIcon = "";
+        let followStr = "";
+        if (user.follow_me && user.following) {
+            followIcon = "icon-huxiangguanzhu";
+            followStr = "互关";
+        } else if (user.following) {
+            followIcon = "icon-weibiaoti--1";
+            followStr = "已关";
+        } else {
+            followIcon = "icon-weibiaoti--";
+            followStr = "关注";
+        }
+
         const day = parseInt((new Date().getTime() - new Date(user.created_at).getTime()) / (1000 * 60 * 60 * 24));
         return (
             <div className="sidebar">
@@ -78,22 +112,75 @@ export default class Left extends Component {
                                 <MyIcon type="icon-dizhi" className='icon'/>
                             </Tooltip>
                             <Tooltip placement="top" title={user.url}>
-                                <a href={user.url} target="view_window"><MyIcon type="icon-wangzhi" className='icon'/></a>
+                                <a href={user.url} target="view_window"><MyIcon type="icon-wangzhi"
+                                                                                className='icon'/></a>
                             </Tooltip>
                         </div>
                         <Text inline size="xs">
                             今日是{pronoun}在饭否的第 {day} 个日子
                         </Text>
                     </div>
-                    {pronoun!=="我"&&(
+                    {pronoun !== "我" && (
                         <div className="operation">
-                            <Button>关注</Button>
-                            <Button>拉黑</Button>
-                            <Button>私信</Button>
+                            <ButtonGroup>
+                                <Button onClick={() => {
+                                    if (user.following) {
+                                        postDelFriend({id: user.id}).then((data) => {
+                                            if (!data.error) {
+                                                message.success('取消关注成功')
+                                                this.context.onChangeUser(data);
+                                            }
+                                        })
+                                    } else {
+                                        postAddFriend({id: user.id}).then((data) => {
+                                            if (!data.error) {
+                                                message.success('关注成功')
+                                                this.context.onChangeUser(data);
+                                            }
+                                        })
+                                    }
+                                }}>
+                                    <MyIcon type={followIcon}/>
+                                    {followStr}
+                                </Button>
+                                <Button onClick={() => {
+                                    postAddBlocks({id: user.id}).then((data) => {
+                                        if (!data.error) {
+                                            message.success('已经成功加入黑名单')
+                                        }
+                                    })
+                                }}>
+                                    <MyIcon type="icon-lahei"/>
+                                    拉黑
+                                </Button>
+                                <Button onClick={() => {
+                                    if (user.follow_me && user.following) {
+                                        this.setState({
+                                            openChat: true,
+                                            userName: user.name
+                                        });
+
+                                        if (this.child.userId !== user.id) {
+                                            this.child.userId = user.id;
+                                            this.child.openChat();
+                                        }
+                                    } else {
+                                        message.error('客户端只能对互相关注的人发送私信，如需更多权限请前往饭否官网')
+                                    }
+                                }}>
+                                    <MyIcon type="icon-dingdanxiangqing_sixin"/>
+                                    私信
+                                </Button>
+                            </ButtonGroup>
                         </div>
                     )}
                 </div>
                 <Menu user={user} pronoun={pronoun} index={index}/>
+
+                <Chat visible={openChat}
+                      userName={userName}
+                      onRef={this.onRef}
+                      close={this.handleItemClose}/>
             </div>
         );
     }

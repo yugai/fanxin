@@ -211,4 +211,15 @@ export const postDenyBlocks = opt => {
     return ff.post('/blocks/destroy', {...opt})
 };
 
+export const getRelationship = opt => {
+    const ff = initFanfou();
+    return ff.get('/friendships/exists', {...opt})
+};
+
+export const postAddBlocks = opt => {
+    const ff = initFanfou();
+    return ff.post('/blocks/create', {...opt})
+};
+
+
 
