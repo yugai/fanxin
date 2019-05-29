@@ -7,8 +7,14 @@ import DocumentTitle from 'react-document-title';
 import moment from "moment/moment";
 import './Message.scss';
 import Chat from "./Chat";
+import PropTypes from "prop-types";
 
 export default class Message extends Component {
+    static contextTypes = {
+        loginUser: PropTypes.object,
+        onChangeUser: PropTypes.func
+    };
+
     constructor(props) {
         super(props);
         this.state = {
@@ -22,7 +28,8 @@ export default class Message extends Component {
     }
 
     componentWillMount() {
-        this.fetchData()
+        this.fetchData();
+        this.context.onChangeUser(this.context.loginUser);
     };
 
     handleItemClick = (user) => {

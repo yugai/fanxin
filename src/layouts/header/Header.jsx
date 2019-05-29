@@ -166,10 +166,10 @@ export default class Header extends Component {
                         <Tabs
                             tabs={[
                                 {
-                                    text: "首页",
+                                    text: (<span style={{fontWeight: 'bold', fontSize: '18px'}}>首页</span>),
                                 },
                                 {
-                                    text: "时刻",
+                                    text: (<span style={{fontWeight: 'bold', fontSize: '18px'}}>时刻</span>),
                                 },
                                 {
                                     text: (<Badge count={mentions} dot={true}>

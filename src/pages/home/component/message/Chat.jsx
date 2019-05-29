@@ -6,6 +6,7 @@ import {Picker} from 'emoji-mart';
 import {Avatar, Spinner} from 'gestalt';
 import {getConversationDetails, postDestroyMessage, postNewMessage} from "../../../../utils/fanfou";
 import moment from 'moment'
+import {history} from "../../../../history";
 
 export default class Chat extends Component {
     static propTypes = {
@@ -105,6 +106,14 @@ export default class Chat extends Component {
         this.fetchData()
     };
 
+    handleOpenUser = (e, user) => {
+        console.log(user);
+        e.stopPropagation();
+        e.nativeEvent.stopImmediatePropagation();
+        const url = '/user/' + (user.id ? user.id : user);
+        history.push(url);
+    };
+
     handleSend = () => {
         this.setState({sending: true});
         postNewMessage({user: this.userId, text: this.state.inputValue}).then((data) => {
@@ -115,7 +124,7 @@ export default class Chat extends Component {
                     inputValue: ''
                 });
                 document.getElementById('chat-bottom').scrollIntoView();
-            }else{
+            } else {
                 message.error(data.error)
             }
         }).catch((e) => {
@@ -143,12 +152,14 @@ export default class Chat extends Component {
                 timeClass = 'item-direction-reverse';
             }
             return (
-                <div className={`bubble-container ${bubbleDirection}`} key={index}>
-                    <Avatar
-                        size="md"
-                        src={message.sender.profile_image_url}
-                        name={message.sender.name}
-                    />
+                <div className={`bubble-container ${bubbleDirection}`} key={message.id}>
+                    <div style={{height: '40px'}} onClick={e => this.handleOpenUser(e, message.sender)}>
+                        <Avatar
+                            size="md"
+                            src={message.sender.profile_image_url}
+                            name={message.sender.name}
+                        />
+                    </div>
                     <div>
                         <Popover placement='top' trigger="click" content={<a style={{color: 'red'}} onClick={() => {
                             this.del(message.id)

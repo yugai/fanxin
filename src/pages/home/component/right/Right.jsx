@@ -3,40 +3,51 @@ import {Button, Text, Link, Box, Avatar, Icon} from 'gestalt'
 import {Carousel, Divider} from 'antd';
 import './Right.scss'
 import Img from '../../../../assets/user_bg.jpg'
+import {getUserTimeLine} from "../../../../utils/fanfou";
 
 export default class Right extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            data: []
+        }
+    }
+
+    componentWillMount() {
+        getUserTimeLine({id: 'lito'}).then((data) => {
+            this.setState({
+                data: data.slice(0, 5)
+            })
+        })
+    }
+
     render() {
         return (
             <div className="sidebar">
-                <Carousel>
-                    <div>
-                        <div style={styles.bg}>
-                            <img style={styles.img} src={Img} alt="img"/>
-                            <div style={styles.text}>
-                                <Text color='white'>
-                                    风特别大，月亮很圆,
-                                    我们站在一起说话,
-                                    总是笑场
-                                </Text>
-                            </div>
-                            <div style={styles.bottom}>
-                                <Box display="flex" alignItems="center">
-                                    <Avatar
-                                        size="md"
-                                        src="/gestalt/static/media/keerthi.b283324e.jpg"
-                                        name="Keerthi"
-                                    />
-                                    <Box flex="grow" marginLeft={2}>
-                                        <Text bold color="white">王兴</Text>
-                                        <Text inline size="xs" color="white">1天前</Text>
+                <Carousel autoplay={true}>
+                    {this.state.data.map((item) => (
+                        <div>
+                            <div style={{
+                                position: "relative",
+                                borderRadius: '5px',
+                                height: '400px',
+                                background: item.photo ? 'black' : '#9E7A7A'
+                            }}>
+                                {item.photo && (<img style={styles.img} src={item.photo.largeurl} alt="img"/>)}
+                                <div style={styles.text}>{item.plain_text}</div>
+                                <div style={styles.bottom}>
+                                    <Box display="flex" alignItems="center">
+                                        <Avatar
+                                            size="md"
+                                            src={item.user.profile_image_url}
+                                            name={item.user.name}
+                                        />
                                     </Box>
-                                    <Box paddingX={1}>
-                                        <Button text="Follow" size="sm" color="red"/>
-                                    </Box>
-                                </Box>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    ))}
                 </Carousel>
 
                 <div style={styles.about}>
@@ -99,21 +110,31 @@ const styles = {
     bg: {
         position: "relative",
         borderRadius: '5px',
-        background: '#000'
+        height: '400px',
+        background: 'black'
     },
     img: {
+        zIndex: 1,
         width: '100%',
-        height: '400px',
+        height: '100%',
         opacity: 0.8,
         borderRadius: '5px',
+        objectFit: 'cover',
         filter: 'alpha(opacity=80)',
     },
     text: {
+        zIndex: 2,
+        width: '300px',
         position: 'absolute',
-        top: '0px',
-        padding: '10px'
+        padding: '10px',
+        color: 'white',
+        wordWrap: 'break-word',
+        overflow: 'hidden',
+        whiteSpace: 'pre-wrap',
+        wordBreak: 'break-all',
     },
     bottom: {
+        zIndex: 3,
         position: 'absolute',
         bottom: '10px',
         width: '300px',

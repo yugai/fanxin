@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import './Left.scss'
 import Menu from "./Menu";
 import {MyIcon} from "../../../../layouts/MyIcon";
-import {Button, Tooltip, message} from "antd";
+import {Button, Tooltip, message, Popconfirm} from "antd";
 import Chat from "../message/Chat";
 import {postAddBlocks, postAddFriend, postDelFriend} from "../../../../utils/fanfou";
 
@@ -41,7 +41,6 @@ export default class Left extends Component {
         const {user} = this.context;
         const {openChat, userName} = this.state;
         console.log(user);
-        console.log(this.context.loginUser);
         let pronoun;
         if (user.id === this.context.loginUser.id) {
             pronoun = '我';
@@ -106,13 +105,13 @@ export default class Left extends Component {
                         <span className="describe">{user.description}</span>
                         <div>
                             <Tooltip placement="top" title={user.birthday}>
-                                <MyIcon type="icon-chushengriqi" className='icon'/>
+                                <MyIcon type="icon-shengrihanlibao" className='icon'/>
                             </Tooltip>
                             <Tooltip placement="top" title={user.location}>
                                 <MyIcon type="icon-dizhi" className='icon'/>
                             </Tooltip>
                             <Tooltip placement="top" title={user.url}>
-                                <a href={user.url} target="view_window"><MyIcon type="icon-wangzhi"
+                                <a href={user.url} target="view_window"><MyIcon type="icon-lianjie"
                                                                                 className='icon'/></a>
                             </Tooltip>
                         </div>
@@ -133,8 +132,11 @@ export default class Left extends Component {
                                         })
                                     } else {
                                         postAddFriend({id: user.id}).then((data) => {
-                                            if (!data.error) {
-                                                message.success('关注成功')
+                                            console.log(data);
+                                            if (data.error) {
+                                                message.success(data.error);
+                                            } else {
+                                                message.success('关注成功');
                                                 this.context.onChangeUser(data);
                                             }
                                         })
@@ -143,16 +145,20 @@ export default class Left extends Component {
                                     <MyIcon type={followIcon}/>
                                     {followStr}
                                 </Button>
-                                <Button onClick={() => {
+                                <Popconfirm title="确定加入黑名单？" okText="是" cancelText="否" onConfirm={() => {
                                     postAddBlocks({id: user.id}).then((data) => {
-                                        if (!data.error) {
+                                        if (data.error) {
+                                            message.success(data.error)
+                                        }else {
                                             message.success('已经成功加入黑名单')
                                         }
                                     })
                                 }}>
-                                    <MyIcon type="icon-lahei"/>
-                                    拉黑
-                                </Button>
+                                    <Button>
+                                        <MyIcon type="icon-lahei"/>
+                                        拉黑
+                                    </Button>
+                                </Popconfirm>
                                 <Button onClick={() => {
                                     if (user.follow_me && user.following) {
                                         this.setState({
