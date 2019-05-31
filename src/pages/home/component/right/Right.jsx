@@ -1,54 +1,71 @@
 import React, {Component} from 'react';
-import {Button, Text, Link, Box, Avatar, Icon} from 'gestalt'
-import {Carousel, Divider} from 'antd';
+import {Text, Link, Box, Icon} from 'gestalt';
+import ReactFontFace from 'react-font-face';
+import kaiti from '../../../../assets/simkai.ttf';
+import impact from '../../../../assets/impact.ttf';
 import './Right.scss'
-import Img from '../../../../assets/user_bg.jpg'
 import {getUserTimeLine} from "../../../../utils/fanfou";
+import {Divider} from "antd";
+import moment from 'moment'
 
-export default class Right extends Component {
+class Right extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            data: []
+            data: null,
+            holiday: false
         }
     }
 
     componentWillMount() {
-        getUserTimeLine({id: 'lito'}).then((data) => {
+        getUserTimeLine({id: '~GgkWKSUlLCo'}).then((data) => {
             this.setState({
-                data: data.slice(0, 5)
+                data: data[0]
             })
-        })
+        });
+
+        fetch(`http://timor.tech/api/holiday/info`, {
+            method: 'GET'
+        }).then(res => res.text()).then(
+            data => {
+                if (data.code === 0) {
+                    this.setState({
+                        holiday: data.holiday.holiday
+                    })
+                }
+            }
+        )
     }
 
     render() {
+        console.log(this.state.data);
         return (
             <div className="sidebar">
-                <Carousel autoplay={true}>
-                    {this.state.data.map((item) => (
-                        <div>
-                            <div style={{
-                                position: "relative",
-                                borderRadius: '5px',
-                                height: '400px',
-                                background: item.photo ? 'black' : '#9E7A7A'
-                            }}>
-                                {item.photo && (<img style={styles.img} src={item.photo.largeurl} alt="img"/>)}
-                                <div style={styles.text}>{item.plain_text}</div>
-                                <div style={styles.bottom}>
-                                    <Box display="flex" alignItems="center">
-                                        <Avatar
-                                            size="md"
-                                            src={item.user.profile_image_url}
-                                            name={item.user.name}
-                                        />
-                                    </Box>
+                {this.state.data && (
+                    <div>
+                        <div style={styles.bg}>
+                            {this.state.data.photo && (<img style={styles.img} src={this.state.data.photo.originurl}/>)}
+                            <div style={{color: this.state.holiday ? 'red' : 'black'}}>
+                                <div style={styles.calendar}>
+                                    <span style={styles.day}>31</span>
+                                    <div style={styles.group}>
+                                        <span style={styles.year}>{moment().format('dddd')}</span>
+                                        <span style={styles.year}>{moment().format('MMMM●YYYY年')}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div style={styles.feed}>
+                                    {this.state.data.repost_status.plain_text}
+                                </div>
+                                <div style={styles.name}>
+                                    via {this.state.data.repost_status.user.name}
                                 </div>
                             </div>
                         </div>
-                    ))}
-                </Carousel>
+                    </div>
+                )}
 
                 <div style={styles.about}>
                     <Text size="xs" color="gray">
@@ -106,39 +123,65 @@ export default class Right extends Component {
     }
 }
 
+let fontConfig = {
+    file: [
+        {
+            fontFamily: 'kaiti',
+            fontStyle: 'normal',
+            file: kaiti,
+        },
+        {
+            fontFamily: 'impact',
+            file: impact
+        }
+    ],
+};
+
 const styles = {
     bg: {
-        position: "relative",
         borderRadius: '5px',
-        height: '400px',
-        background: 'black'
+        background: 'white',
+        display: 'flex',
+        flexDirection: 'column'
     },
     img: {
-        zIndex: 1,
         width: '100%',
-        height: '100%',
-        opacity: 0.8,
-        borderRadius: '5px',
+        maxHeight: '200px',
         objectFit: 'cover',
-        filter: 'alpha(opacity=80)',
+        borderTopRightRadius: '5px',
+        borderTopLeftRadius: '5px'
     },
-    text: {
-        zIndex: 2,
-        width: '300px',
-        position: 'absolute',
+    calendar: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        padding:'20px 0px'
+    },
+    day: {
+        fontFamily: 'impact',
+        fontSize: '60px',
+    },
+    group: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        marginLeft: '5px'
+    },
+    year: {
+        fontSize: '18px',
+        fontWeight: 'bold'
+    },
+    feed: {
+        width: '100%',
+        padding: '0px 10px',
+        fontFamily: 'kaiti',
+        fontSize: '18px'
+    },
+    name: {
+        width: '100%',
         padding: '10px',
-        color: 'white',
-        wordWrap: 'break-word',
-        overflow: 'hidden',
-        whiteSpace: 'pre-wrap',
-        wordBreak: 'break-all',
-    },
-    bottom: {
-        zIndex: 3,
-        position: 'absolute',
-        bottom: '10px',
-        width: '300px',
-        padding: '10px'
+        fontFamily: 'kaiti',
+        textAlign: 'right'
     },
     about: {
         marginTop: '12px',
@@ -147,3 +190,5 @@ const styles = {
         padding: '15px'
     }
 };
+
+export default ReactFontFace(Right, fontConfig);

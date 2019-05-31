@@ -151,6 +151,11 @@ export const getMentions = opt => {
     return ff.get('/statuses/mentions', {...opt, format: 'html'})
 };
 
+export const getBrowse= opt => {
+    const ff = initFanfou();
+    return ff.get('/statuses/public_timeline', {...opt, format: 'html'})
+};
+
 export const postDelFavorites = opt => {
     const ff = initFanfou();
     return ff.post('/favorites/destroy/' + opt)

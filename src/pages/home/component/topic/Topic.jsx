@@ -10,7 +10,8 @@ import {
     getSearchTimeLine,
     getMentions,
     getFavoritesList,
-    getUserInfo
+    getUserInfo,
+    getBrowse
 } from '../../../../utils/fanfou';
 import './Topic.scss'
 import Item from "./Item";
@@ -40,7 +41,8 @@ export default class Topic extends Component {
             hasNewFeed: false,
             isPublic: false,
             loading: false,
-            count: 0
+            count: 0,
+            canLoad: true
         };
     }
 
@@ -75,6 +77,9 @@ export default class Topic extends Component {
             case 'at':
                 response = getMentions({max_id: maxId});
                 break;
+            case 'browse':
+                response = getBrowse({max_id: maxId});
+                break;
             case 'search':
                 response = getSearchTimeLine({max_id: maxId, q: this.props.match.params.text});
                 break;
@@ -95,7 +100,8 @@ export default class Topic extends Component {
             } else {
                 const list = that.state.data.concat(data);
                 that.setState({
-                    data: list
+                    data: list,
+                    canLoad: this.props.url !== 'browse'
                 })
             }
         }).catch(() => {
@@ -158,6 +164,7 @@ export default class Topic extends Component {
             loading,
             isPublic,
             hasNewFeed,
+            canLoad
         } = this.state;
 
         let title = "饭新";
@@ -231,6 +238,7 @@ export default class Topic extends Component {
                             itemDiv={this.renderItem.bind(this)}
                             loadMore={this.handleInfiniteOnLoad.bind(this)}
                             data={data}
+                            hasMore={canLoad}
                             num={50}
                         />
                     )
@@ -241,50 +249,65 @@ export default class Topic extends Component {
         );
     }
 
+    refreshHome() {
+        const that = this;
+        that.timer = setInterval(
+            () => {
+                getHomeTimeLine().then((data) => {
+                    const item = data[data.length - 1];
+                    let count = data.length;
+                    if (that.state.hasNewFeed) {
+                        that.state.newData.map((element, index) => {
+                            if (element && element.id === item.id) {
+                                count = data.length - 1 - index;
+                                if (count > 0) {
+                                    that.setState({
+                                        count: count + that.state.count,
+                                        newData: data.slice(0, count).concat(this.state.newData)
+                                    })
+                                }
+
+                            }
+                        })
+                    } else {
+                        that.state.data.map((element, index) => {
+                            if (element.id === item.id) {
+                                count = data.length - 1 - index;
+                                if (count > 0) {
+                                    that.setState({
+                                        hasNewFeed: true,
+                                        count: count,
+                                        newData: data.slice(0, count).concat(this.state.data)
+                                    })
+                                }
+
+                            }
+                        })
+                    }
+                })
+            },
+            10000
+        );
+    }
+
+    refreshBrowse() {
+        const that = this;
+        that.timer = setInterval(
+            () => {
+                getBrowse().then((data)=>{
+
+                })
+            },
+            10000
+        );
+    }
 
     componentDidMount() {
-        const that = this;
         if (this.props.url === "home") {
-            that.timer = setInterval(
-                () => {
-                    getHomeTimeLine().then((data) => {
-                        const item = data[data.length - 1];
-                        console.log(item);
-                        let count = data.length;
-                        if (that.state.hasNewFeed) {
-                            that.state.newData.map((element, index) => {
-                                if (element && element.id === item.id) {
-                                    count = data.length - 1 - index;
-                                    if (count > 0) {
-                                        that.setState({
-                                            count: count + that.state.count,
-                                            newData: data.slice(0, count).concat(this.state.newData)
-                                        })
-                                    }
-
-                                }
-                            })
-                        } else {
-                            that.state.data.map((element, index) => {
-                                if (element.id === item.id) {
-                                    count = data.length - 1 - index;
-                                    if (count > 0) {
-                                        that.setState({
-                                            hasNewFeed: true,
-                                            count: count,
-                                            newData: data.slice(0, count).concat(this.state.data)
-                                        })
-                                    }
-
-                                }
-                            })
-                        }
-                    })
-                },
-                10000
-            );
+            this.refreshHome()
+        } else if (this.props.url === "browse") {
+            this.refreshBrowse()
         }
-
     }
 
     componentWillUnmount() {

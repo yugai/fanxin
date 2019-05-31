@@ -69,6 +69,7 @@ export default class Home extends Component {
                         <Route path="/requests/:id" component={props => (<Follower url='requests' {...props}/>)}/>
                         <Route path="/search/:text" component={props => <Topic url='search' {...props}/>}/>
                         <Route path="/at" component={props => <Topic url='at' {...props}/>}/>
+                        <Route path="/browse" component={props => <Topic url='browse' {...props}/>}/>
                         <Route path="/user/:id" component={props => <Topic url='user' {...props}/>}/>
                         <Route path="/favorite/:id" component={props => <Topic url='favorite' {...props}/>}/>
                         <Redirect to="/error/404"/>

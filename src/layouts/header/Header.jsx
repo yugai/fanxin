@@ -21,6 +21,7 @@ import {MyIcon} from "../../layouts/MyIcon";
 import {getTrends, getNotification} from "../../utils/fanfou";
 import Send from "../../pages/home/component/send/Send";
 import {history} from '../../history'
+import PropTypes from "prop-types";
 
 
 function getBase64(img, callback) {
@@ -30,10 +31,15 @@ function getBase64(img, callback) {
 }
 
 export default class Header extends Component {
+    static contextTypes = {
+        user: PropTypes.object,
+        loginUser: PropTypes.object
+    };
+
     constructor(props) {
         super(props);
         this.state = {
-            activeIndex: 0,
+            activeIndex: -1,
             trends: [],
             search: '',
             user: null,
@@ -60,7 +66,7 @@ export default class Header extends Component {
                     history.push('/');
                     break;
                 case 1:
-                    history.push('/');
+                    history.push('/browse');
                     break;
                 case 2:
                     history.push('/at');
@@ -145,6 +151,10 @@ export default class Header extends Component {
             imageUrl,
             showSend
         } = this.state;
+
+
+
+
 
         const hot = trends.map((item, i) => (
             <div className="trend" key={i} onClick={() => {
