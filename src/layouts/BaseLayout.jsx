@@ -9,7 +9,7 @@ import Login from "../pages/login";
 import {history} from "../history";
 import MainLayout from "./MainLayout";
 import {PrivateRoute} from "./PrivateRoute";
-import {notification} from "antd";
+import {notification,message} from "antd";
 import Exception from '../pages/exception'
 
 
@@ -19,6 +19,11 @@ export default class BaseLayout extends Component {
         super(props);
         notification.config({
             placement: 'bottomRight',
+        });
+        message.config({
+            top: 100,
+            duration: 2,
+            maxCount: 3,
         });
     }
 

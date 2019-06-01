@@ -1,19 +1,11 @@
 import React, {Component} from 'react';
-import {Input, Badge, Upload, message, Modal} from 'antd';
+import {Input, Badge, message, Modal} from 'antd';
 import Popup from "reactjs-popup";
 import {
     Tabs,
     Box,
     IconButton,
-    Avatar,
-    Button,
-    Column,
-    Label,
-    TextArea,
-    TextField,
-    Text,
-    Divider,
-    Modal as Modal2
+    Avatar
 } from 'gestalt';
 import './header.scss'
 import Logo from '../../logo.svg';
@@ -24,12 +16,6 @@ import {history} from '../../history'
 import PropTypes from "prop-types";
 
 
-function getBase64(img, callback) {
-    const reader = new FileReader();
-    reader.addEventListener('load', () => callback(reader.result));
-    reader.readAsDataURL(img);
-}
-
 export default class Header extends Component {
     static contextTypes = {
         user: PropTypes.object,
@@ -39,64 +25,35 @@ export default class Header extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            activeIndex: -1,
             trends: [],
             search: '',
             user: null,
             mentions: 0,
             direct_messages: 0,
             friend_requests: 0,
-            showUserEdit: false,
             showSend: false,
             imageUrl: '',
             open: false
         };
         this.handleChange = this._handleChange.bind(this);
-        this.handleToggleUserModal = this._handleToggleUserModal.bind(this);
         this.handleToggleSendModal = this._handleToggleSendModal.bind(this);
     }
 
     _handleChange({activeTabIndex, event}) {
         event.preventDefault();
-        this.setState({
-            activeIndex: activeTabIndex
-        }, () => {
-            switch (activeTabIndex) {
-                case 0:
-                    history.push('/');
-                    break;
-                case 1:
-                    history.push('/browse');
-                    break;
-                case 2:
-                    history.push('/at');
-                    break;
-            }
-        });
-    }
-
-    handleChangeImage = (info) => {
-
-        getBase64(info.file.originFileObj, imageUrl => this.setState({
-            imageUrl
-        }));
-    };
-
-    beforeUpload(file) {
-        const isJPG = file.type === 'image/jpeg';
-        if (!isJPG) {
-            message.error('You can only upload JPG file!');
+        switch (activeTabIndex) {
+            case 0:
+                history.push('/');
+                break;
+            case 1:
+                history.push('/browse');
+                break;
+            case 2:
+                history.push('/at');
+                break;
         }
-        const isLt2M = file.size / 1024 / 1024 < 2;
-        if (!isLt2M) {
-            message.error('Image must smaller than 2MB!');
-        }
-        return isJPG && isLt2M;
     }
 
-    _handleToggleUserModal() {
-        this.setState(prevState => ({showUserEdit: !prevState.showUserEdit}));
-    }
 
     _handleToggleSendModal() {
         this.setState(prevState => ({showSend: !prevState.showSend}));
@@ -140,20 +97,33 @@ export default class Header extends Component {
 
     render() {
         const {
-            activeIndex,
             trends,
             search,
             user,
             mentions,
             direct_messages,
             friend_requests,
-            showUserEdit,
-            imageUrl,
             showSend
         } = this.state;
 
 
-
+        let activeIndex = 0;
+        if (user && user.id === this.context.user.id) {
+            const arr = this.props.location.pathname.split('/');
+            switch (arr[1]) {
+                case 'browse':
+                    activeIndex = 1;
+                    break;
+                case 'at':
+                    activeIndex = 2;
+                    break;
+                default:
+                    activeIndex = 0;
+                    break
+            }
+        } else {
+            activeIndex = -1;
+        }
 
 
         const hot = trends.map((item, i) => (
@@ -244,11 +214,14 @@ export default class Header extends Component {
                                            borderRadius: "3px"
                                        }}>
                                     <div className='pop-user-menu'>
-                                        <div className='user-item' onClick={() => this.setState({showUserEdit: true})}>
+                                        <div className='user-item' onClick={() => message.info('请前往饭否官网修改用户信息')}>
                                             <MyIcon type="icon-account-settings-variant" className='icon'/>
                                             编辑资料
                                         </div>
-                                        <div className='user-item'>
+                                        <div className='user-item' onClick={() => {
+                                            localStorage.clear();
+                                            history.push('/login');
+                                        }}>
                                             <MyIcon type="icon-logout" className='icon'/>
                                             退出登录
                                         </div>
@@ -306,131 +279,6 @@ export default class Header extends Component {
                         this.setState({showSend: false})
                     }}/>
                 </Modal>
-
-
-                {showUserEdit && (
-                    <Modal2
-                        accessibilityCloseLabel="close"
-                        onDismiss={this.handleToggleUserModal}
-                        role='alertdialog'
-                        footer={
-                            <Box
-                                justifyContent="between"
-                                display="flex"
-                                direction="row"
-                                marginLeft={-1}
-                                marginRight={-1}
-                            >
-                                <Box column={6} paddingX={1}>
-                                    <Button text="更多设置" inline/>
-                                </Box>
-                                <Box column={6} paddingX={1}>
-                                    <Box
-                                        display="flex"
-                                        direction="row"
-                                        justifyContent="end"
-                                        marginLeft={-1}
-                                        marginRight={-1}
-                                    >
-                                        <Box paddingX={1}>
-                                            <Button text="取消" inline onClick={this.handleToggleModal}/>
-                                        </Box>
-                                        <Box paddingX={1}>
-                                            <Button color="red" inline text="保存"/>
-                                        </Box>
-                                    </Box>
-                                </Box>
-                            </Box>
-                        }
-                        size="md"
-                    >
-                        <Box display="flex" direction="row" position="relative">
-                            <Column span={12}>
-                                <Box paddingY={2} paddingX={4} display="flex" alignItems='center'>
-                                    <Upload
-                                        name="avatar"
-                                        listType="picture-card"
-                                        className="avatar-uploader"
-                                        showUploadList={false}
-                                        beforeUpload={this.beforeUpload}
-                                        onChange={this.handleChangeImage}
-                                    >
-                                        <Avatar
-                                            size="lg"
-                                            src={imageUrl}
-                                            name="Avatar"
-                                        />
-                                    </Upload>
-                                </Box>
-                                <Divider/>
-                                <Box paddingY={2} paddingX={4} display="flex">
-                                    <Column span={4}>
-                                        <Label htmlFor="name">
-                                            <Text align="left" bold>
-                                                昵称
-                                            </Text>
-                                        </Label>
-                                    </Column>
-                                    <Column span={8}>
-                                        <TextField id="name" onChange={() => undefined}/>
-                                    </Column>
-                                </Box>
-                                <Divider/>
-                                <Box paddingY={2} paddingX={4} display="flex">
-                                    <Column span={4}>
-                                        <Label htmlFor="desc">
-                                            <Text align="left" bold>
-                                                描述
-                                            </Text>
-                                        </Label>
-                                    </Column>
-                                    <Column span={8}>
-                                        <TextArea id="desc" onChange={() => undefined}/>
-                                    </Column>
-                                </Box>
-                                <Divider/>
-                                <Box paddingY={2} paddingX={4} display="flex">
-                                    <Column span={4}>
-                                        <Label htmlFor="address">
-                                            <Text align="left" bold>
-                                                位置
-                                            </Text>
-                                        </Label>
-                                    </Column>
-                                    <Column span={8}>
-                                        <TextField id="address" onChange={() => undefined}/>
-                                    </Column>
-                                </Box>
-                                <Divider/>
-                                <Box paddingY={2} paddingX={4} display="flex">
-                                    <Column span={4}>
-                                        <Label htmlFor="emile">
-                                            <Text align="left" bold>
-                                                邮箱
-                                            </Text>
-                                        </Label>
-                                    </Column>
-                                    <Column span={8}>
-                                        <TextField id="emile" onChange={() => undefined}/>
-                                    </Column>
-                                </Box>
-                                <Divider/>
-                                <Box paddingY={2} paddingX={4} display="flex">
-                                    <Column span={4}>
-                                        <Label htmlFor="http">
-                                            <Text align="left" bold>
-                                                网址
-                                            </Text>
-                                        </Label>
-                                    </Column>
-                                    <Column span={8}>
-                                        <TextField id="http" onChange={() => undefined}/>
-                                    </Column>
-                                </Box>
-                            </Column>
-                        </Box>
-                    </Modal2>
-                )}
             </header>
         );
     }

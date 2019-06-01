@@ -38,10 +38,8 @@ export default class Topic extends Component {
         this.state = {
             data: [],
             newData: [],
-            hasNewFeed: false,
             isPublic: false,
             loading: false,
-            count: 0,
             canLoad: true
         };
     }
@@ -98,9 +96,8 @@ export default class Topic extends Component {
                     isPublic: true
                 })
             } else {
-                const list = that.state.data.concat(data);
                 that.setState({
-                    data: list,
+                    data: that.state.data.concat(data),
                     canLoad: this.props.url !== 'browse'
                 })
             }
@@ -140,10 +137,8 @@ export default class Topic extends Component {
 
     handleClose = () => {
         this.setState({
-            hasNewFeed: false,
-            data: this.state.newData,
-            newData: [],
-            count: 0
+            data: this.state.newData.concat(this.state.data),
+            newData: []
         });
     };
 
@@ -160,10 +155,9 @@ export default class Topic extends Component {
     render() {
         const {
             data,
-            count,
+            newData,
             loading,
             isPublic,
-            hasNewFeed,
             canLoad
         } = this.state;
 
@@ -190,28 +184,25 @@ export default class Topic extends Component {
         let send;
         if (this.props.url === "home") {
             send = (<Send onSend={(item) => {
-                    getHomeTimeLine().then((data) => {
-                        if (Array.isArray(data) && data[0].id !== item.id) {
-                            data.unshift(item)
-                        }
-                        this.setState({
-                            hasNewFeed: false,
-                            data: data,
-                            newData: [],
-                            count: 0
-                        })
+                    let data = this.state.newData.concat(this.state.data);
+                    data.unshift(item);
+                    this.setState({
+                        data: data,
+                        newData: []
                     })
                 }}/>
             )
         }
 
+        const count = newData.length;
+
         return (
             <div className="center-container">
                 {send}
                 {
-                    hasNewFeed && (
+                    count > 0 && (
                         <Alert
-                            message={"您有" + count + "新的消息"}
+                            message={"您有" + count + "条新的消息"}
                             banner={true} type="warning"
                             showIcon={false}
                             closeText="点击查看"
@@ -249,40 +240,32 @@ export default class Topic extends Component {
         );
     }
 
-    refreshHome() {
+    refreshFeed() {
         const that = this;
         that.timer = setInterval(
             () => {
-                getHomeTimeLine().then((data) => {
-                    const item = data[data.length - 1];
-                    let count = data.length;
-                    if (that.state.hasNewFeed) {
-                        that.state.newData.map((element, index) => {
-                            if (element && element.id === item.id) {
-                                count = data.length - 1 - index;
-                                if (count > 0) {
+                let response;
+                if (this.props.url === "home") {
+                    response = getHomeTimeLine();
+                    if(this.state.data[0].user.id===this.context.loginUser.id){
+                        this.state.data.pop();
+                    }
+                } else {
+                    response = getBrowse();
+                }
+                response.then((data) => {
+                    const arr = this.state.newData.concat(this.state.data);
+                    if (arr[0].id !== data[0].id) {
+                        for (let i = 0; i < arr.length; i++) {
+                            for (let j = 0; j < data.length; j++) {
+                                if (arr[i].id === data[j].id && j > 0) {
                                     that.setState({
-                                        count: count + that.state.count,
-                                        newData: data.slice(0, count).concat(this.state.newData)
-                                    })
+                                        newData: data.slice(0, j).concat(this.state.newData)
+                                    });
+                                    return;
                                 }
-
                             }
-                        })
-                    } else {
-                        that.state.data.map((element, index) => {
-                            if (element.id === item.id) {
-                                count = data.length - 1 - index;
-                                if (count > 0) {
-                                    that.setState({
-                                        hasNewFeed: true,
-                                        count: count,
-                                        newData: data.slice(0, count).concat(this.state.data)
-                                    })
-                                }
-
-                            }
-                        })
+                        }
                     }
                 })
             },
@@ -290,23 +273,9 @@ export default class Topic extends Component {
         );
     }
 
-    refreshBrowse() {
-        const that = this;
-        that.timer = setInterval(
-            () => {
-                getBrowse().then((data)=>{
-
-                })
-            },
-            10000
-        );
-    }
-
     componentDidMount() {
-        if (this.props.url === "home") {
-            this.refreshHome()
-        } else if (this.props.url === "browse") {
-            this.refreshBrowse()
+        if (this.props.url === "home" || this.props.url === "browse") {
+            this.refreshFeed()
         }
     }
 

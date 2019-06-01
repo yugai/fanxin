@@ -42,7 +42,7 @@ class Login extends Component {
                         <div style={styles.left}>
                             <div style={styles.text}>
                                 <div style={styles.title}>饭否</div>
-                                <p style={styles.description}>--记录你的思考</p>
+                                <p style={styles.description}>--在幻变的生命里，岁月，原是最大的小偷。</p>
                             </div>
                             <div style={styles.mask}/>
                         </div>
@@ -50,7 +50,7 @@ class Login extends Component {
                     <Col span="8" style={styles.col}>
                         <div style={styles.content}>
                             <Box display='flex' direction='column' width='50%'>
-                                <p style={styles.formTitle}>Login</p>
+                                <p style={styles.formTitle}>登录</p>
                                 <Box marginBottom={5}>
                                     <TextField
                                         id="username"
@@ -64,7 +64,7 @@ class Login extends Component {
                                     <TextField
                                         id="password"
                                         onChange={this.handleChangePassWord}
-                                        placeholder="用户名"
+                                        placeholder="密码"
                                         value={this.state.password}
                                         type="password"
                                     />

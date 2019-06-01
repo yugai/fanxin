@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
-import {Text, Link, Box, Icon} from 'gestalt';
+import {Text, Box, Icon} from 'gestalt';
+import {message} from 'antd';
+import {Link} from 'react-router-dom';
 import ReactFontFace from 'react-font-face';
 import kaiti from '../../../../assets/simkai.ttf';
 import impact from '../../../../assets/impact.ttf';
@@ -42,7 +44,7 @@ class Right extends Component {
         console.log(this.state.data);
         return (
             <div className="sidebar">
-                {this.state.data && (
+                {this.state.data && this.state.data.repost_status && (
                     <div>
                         <div style={styles.bg}>
                             {this.state.data.photo && (<img style={styles.img} src={this.state.data.photo.originurl}/>)}
@@ -69,41 +71,24 @@ class Right extends Component {
 
                 <div style={styles.about}>
                     <Text size="xs" color="gray">
-                        本程序是由饭否提供
-                        <Text size="xs" inline italic>
-                            <Link inline href="https://pinterest.com">
-                                开放API
-                            </Link>
-                        </Text>
+                        本程序是由饭否提供开放
+                        <a href="https://github.com/FanfouAPI/FanFouAPIDoc"> <Text inline size="xs"
+                                                                                   color="gray"> API </Text> </a>
                         开发而成
                     </Text>
                     <Text size="xs" color="gray">
-                        移动端App下载链接:
-                        <Text size="xs" inline italic>
-                            <Link inline href="https://pinterest.com">
-                                Android
-                            </Link>
-                        </Text>
-                        <Text size="xs" inline> </Text>
-                        <Text size="xs" inline italic>
-                            <Link inline href="https://pinterest.com">
-                                iOS
-                            </Link>
-                        </Text>
+                        移动端 App 下载链接:
+                        <a onClick={() => {
+                            message.error('目前正在开发中，尽情期待')
+                        }}> <Text inline size="xs" color="gray"> Android </Text></a>
+                        <a onClick={() => {
+                            message.error('目前正在开发中，尽情期待')
+                        }}> <Text inline size="xs" color="gray"> iOS </Text></a>
                     </Text>
                     <Text size="xs" color="gray">
-                        关于作者
-                        <Text size="xs" inline italic>
-                            <Link inline href="https://pinterest.com">
-                                @饭新
-                            </Link>
-                        </Text>
-                        <Text size="xs" inline italic>
-                            <Link inline href="https://pinterest.com">
-                                为什么
-                            </Link>
-                        </Text>
-                        <Text size="xs" color="gray" inline> 要做这个程序</Text>
+                        感谢
+                        <Link to='/user/lito'> @飯小默 </Link>
+                        提供的 SDK
                     </Text>
 
                     <Divider/>
@@ -113,9 +98,11 @@ class Right extends Component {
                         <Box marginRight={1} padding={1}>
                             <Icon icon="heart" accessibilityLabel="heart" color="red"/>
                         </Box>
-                        <Link href="https://pinterest.com">
+                        <a onClick={() => {
+                            message.info('感谢您的好意，目前这只是一个测试按钮')
+                        }}>
                             <Text color="blue" bold>赞助开发者</Text>
-                        </Link>
+                        </a>
                     </Box>
                 </div>
             </div>
@@ -142,7 +129,8 @@ const styles = {
         borderRadius: '5px',
         background: 'white',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        marginBottom: '12px'
     },
     img: {
         width: '100%',
@@ -155,7 +143,7 @@ const styles = {
         width: '100%',
         display: 'flex',
         justifyContent: 'center',
-        padding:'20px 0px'
+        padding: '20px 0px'
     },
     day: {
         fontFamily: 'impact',
@@ -173,18 +161,18 @@ const styles = {
     },
     feed: {
         width: '100%',
-        padding: '0px 10px',
+        paddingLeft: '20px',
+        paddingRight: '20px',
         fontFamily: 'kaiti',
         fontSize: '18px'
     },
     name: {
         width: '100%',
-        padding: '10px',
+        padding: '20px',
         fontFamily: 'kaiti',
         textAlign: 'right'
     },
     about: {
-        marginTop: '12px',
         background: '#fff',
         borderRadius: '5px',
         padding: '15px'
