@@ -26,9 +26,8 @@
     .describe {
       width: 300px;
       padding: 20px;
-      white-space: pre-wrap;
-      text-align: center;
-      overflow: hidden;
+      word-break:break-all;
+      word-wrap:break-word;
     }
 
     .icon {

@@ -164,7 +164,9 @@ const styles = {
         paddingLeft: '20px',
         paddingRight: '20px',
         fontFamily: 'kaiti',
-        fontSize: '18px'
+        fontSize: '18px',
+        wordBreak: 'break-all',
+        wordWrap: 'break-word'
     },
     name: {
         width: '100%',
