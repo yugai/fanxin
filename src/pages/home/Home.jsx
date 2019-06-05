@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import {Switch, Route, Redirect} from 'react-router-dom'
+import {Switch, Route, Redirect} from 'react-router-dom';
+import CacheRoute, { CacheSwitch } from 'react-router-cache-route'
 import Left from "./component/left/Left";
 import Right from "./component/right/Right";
 import Topic from "./component/topic/Topic";
@@ -14,8 +15,8 @@ export default class Home extends Component {
             <div style={{display: 'flex', minHeight: '100%'}}>
                 <Left {...this.props}/>
                 <div>
-                    <Switch>
-                        <Route path="/" exact component={props => (<Topic url='home' {...props}/>)}/>
+                    <CacheSwitch>
+                        <CacheRoute path="/" when="back" exact render={props => <Topic url='home' {...props}/>}/>
                         <Route path="/photo/:id" component={Photo}/>
                         <Route path="/message" component={Message}/>
                         <Route path="/friends/:id" component={props => (<Follower url='friends' {...props}/>)}/>
@@ -28,7 +29,7 @@ export default class Home extends Component {
                         <Route path="/user/:id" component={props => <Topic url='user' {...props}/>}/>
                         <Route path="/favorite/:id" component={props => <Topic url='favorite' {...props}/>}/>
                         <Redirect to="/error/404"/>
-                    </Switch>
+                    </CacheSwitch>
                 </div>
                 <Right/>
             </div>

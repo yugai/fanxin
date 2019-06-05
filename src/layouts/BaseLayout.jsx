@@ -9,7 +9,7 @@ import Login from "../pages/login";
 import {history} from "../history";
 import MainLayout from "./MainLayout";
 import {PrivateRoute} from "./PrivateRoute";
-import {notification,message} from "antd";
+import {notification, message} from "antd";
 import Exception from '../pages/exception'
 
 
@@ -33,7 +33,7 @@ export default class BaseLayout extends Component {
                 <Switch>
                     <Route path="/login" component={Login}/>
                     <Route path="/error/:code" component={Exception}/>
-                    <PrivateRoute  path="/" component={MainLayout}/>
+                    <PrivateRoute path="/" component={MainLayout}/>
                 </Switch>
             </Router>
         );

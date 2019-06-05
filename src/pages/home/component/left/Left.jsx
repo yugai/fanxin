@@ -160,7 +160,7 @@ export default class Left extends Component {
                                     </Button>
                                 </Popconfirm>
                                 <Button onClick={() => {
-                                    if (user.follow_me && user.following) {
+                                    if (user.follow_me) {
                                         this.setState({
                                             openChat: true,
                                             userName: user.name
@@ -171,7 +171,7 @@ export default class Left extends Component {
                                             this.child.openChat();
                                         }
                                     } else {
-                                        message.error('客户端只能对互相关注的人发送私信，如需更多权限请前往饭否官网')
+                                        message.error('客户端只能对关注你的人发送私信，如需更多权限请前往饭否官网')
                                     }
                                 }}>
                                     <MyIcon type="icon-dingdanxiangqing_sixin"/>

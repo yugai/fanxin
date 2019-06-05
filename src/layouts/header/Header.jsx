@@ -43,7 +43,17 @@ export default class Header extends Component {
         event.preventDefault();
         switch (activeTabIndex) {
             case 0:
-                history.push('/');
+                const arr = this.props.location.pathname.split('/');
+                console.log(arr);
+                if (arr[1]==="") {
+                    window.scrollTo({
+                        left: 0,
+                        top: 0,
+                        behavior: 'smooth',
+                    });
+                } else {
+                    history.push('/');
+                }
                 break;
             case 1:
                 history.push('/browse');

@@ -19,11 +19,13 @@ export default class Item extends Component {
 
     static propTypes = {
         item: PropTypes.object,
-        onDel: PropTypes.func
+        onDel: PropTypes.func,
+        onOpenUser: PropTypes.func
     };
 
     static defaultProps = {
-        onDel: Promise.resolve.bind(Promise)
+        onDel: Promise.resolve.bind(Promise),
+        onOpenUser: Promise.resolve.bind(Promise)
     };
 
     constructor(props) {
@@ -145,14 +147,14 @@ export default class Item extends Component {
                 <div className='child-background'>
                     <Box display='flex' direction='row' justifyContent="start" alignItems="center">
                         <div style={{height: '24px', marginRight: '10px'}}
-                             onClick={e => this.handleOpenUser(e, item.user)}>
+                             onClick={e => this.handleOpenUser(e, item.user.id)}>
                             <Avatar
                                 size="sm"
                                 src={item.user.profile_image_url}
                                 name={item.user.name}
                             />
                         </div>
-                        <Popup trigger={<div onClick={e => this.handleOpenUser(e, item.user)}>
+                        <Popup trigger={<div onClick={e => this.handleOpenUser(e, item.user.id)}>
                             <Text bold><Link inline>
                                 {item.user.name}
                             </Link></Text>
@@ -198,11 +200,9 @@ export default class Item extends Component {
     };
 
     handleOpenUser = (e, user) => {
-        console.log(user);
         e.stopPropagation();
         e.nativeEvent.stopImmediatePropagation();
-        const url = '/user/' + (user.id ? user.id : user);
-        history.push(url);
+        this.props.onOpenUser(user)
     };
 
 
@@ -245,7 +245,7 @@ export default class Item extends Component {
         const {openLight, openReply, replyType} = this.state;
         return (<div className="list-item">
                 <div style={{display: 'flex', padding: '10px'}} onClick={this.handleItemClick}>
-                    <div style={{height: '40px'}} onClick={e => this.handleOpenUser(e, item.user)}>
+                    <div style={{height: '40px'}} onClick={e => this.handleOpenUser(e, item.user.id)}>
                         <Avatar
                             size="md"
                             src={item.user.profile_image_url}
@@ -254,7 +254,7 @@ export default class Item extends Component {
                     </div>
                     <Box display="flex" direction="column" width="100%" marginLeft={2}>
                         <Box display="flex" alignItems="center">
-                            <Popup trigger={<div onClick={e => this.handleOpenUser(e, item.user)}>
+                            <Popup trigger={<div onClick={e => this.handleOpenUser(e, item.user.id)}>
                                 <Text bold><Link inline>
                                     {item.user.name}
                                 </Link></Text>

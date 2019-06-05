@@ -11,12 +11,13 @@ import {
     getMentions,
     getFavoritesList,
     getUserInfo,
-    getBrowse
+    getBrowse, postAddFriend
 } from '../../../../utils/fanfou';
 import './Topic.scss'
 import Item from "./Item";
 import PropTypes from 'prop-types'
 import ErrorImg from '../../../../assets/e-private.png';
+import {history} from "../../../../history";
 
 
 export default class Topic extends Component {
@@ -42,7 +43,22 @@ export default class Topic extends Component {
             loading: false,
             canLoad: true
         };
+
+        if (props.cacheLifecycles) {
+            props.cacheLifecycles.didCache(this.componentDidCache);
+            props.cacheLifecycles.didRecover(this.componentDidRecover);
+        }
     }
+
+    componentDidCache = () => {
+        console.log('List cached');
+    };
+
+    componentDidRecover = () => {
+        console.log('List recovered');
+        this.getUser();
+    };
+
 
     componentWillMount() {
         this.fetchData();
@@ -112,6 +128,7 @@ export default class Topic extends Component {
     };
 
     getUser() {
+        console.log(this.props.match.params.id);
         if (this.props.match.params.id) {
             if (this.context.user.id !== this.props.match.params.id) {
                 getUserInfo({"id": this.props.match.params.id}).then((data) => {
@@ -127,7 +144,15 @@ export default class Topic extends Component {
     }
 
     handleFollow = () => {
-
+        postAddFriend({id: this.context.user.id}).then((data) => {
+            console.log(data);
+            if (data.error) {
+                message.success(data.error);
+            } else {
+                message.success('关注成功');
+                this.context.onChangeUser(data);
+            }
+        })
     };
 
 
@@ -143,12 +168,18 @@ export default class Topic extends Component {
     };
 
     renderItem = (item, i) => {
-        return <Item item={item} key={item.id} onDel={() => {
-            this.state.data.splice(i, 1);
-            this.setState({
-                data: this.state.data
-            })
-        }}/>
+        return <Item item={item} key={item.id}
+                     onDel={() => {
+                         this.state.data.splice(i, 1);
+                         this.setState({
+                             data: this.state.data
+                         })
+                     }}
+                     onOpenUser={(user) => {
+                         const url = '/user/' + user;
+                         history.push(url);
+                     }}
+        />
     };
 
 
@@ -247,7 +278,7 @@ export default class Topic extends Component {
                 let response;
                 if (this.props.url === "home") {
                     response = getHomeTimeLine();
-                    if(this.state.data[0].user.id===this.context.loginUser.id){
+                    if (this.state.data[0].user.id === this.context.loginUser.id) {
                         this.state.data.pop();
                     }
                 } else {

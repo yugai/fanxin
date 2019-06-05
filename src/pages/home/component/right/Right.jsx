@@ -50,7 +50,7 @@ class Right extends Component {
                             {this.state.data.photo && (<img style={styles.img} src={this.state.data.photo.originurl}/>)}
                             <div style={{color: this.state.holiday ? 'red' : 'black'}}>
                                 <div style={styles.calendar}>
-                                    <span style={styles.day}>31</span>
+                                    <span style={styles.day}>{moment().format('DD')}</span>
                                     <div style={styles.group}>
                                         <span style={styles.year}>{moment().format('dddd')}</span>
                                         <span style={styles.year}>{moment().format('MMMM●YYYY年')}</span>
